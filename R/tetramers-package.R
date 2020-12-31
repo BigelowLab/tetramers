@@ -1,0 +1,35 @@
+#' tetramers
+#'
+#' tetramers detects outlier regions in genomes in terms of tetramer composition,
+#' which are indicative of either contamination or gene transfer. Tetramers along
+#' a contig are tabulated by sliding a window along the length each contig.
+#'
+#' @name tetramers-package
+#' @docType package
+#' @importFrom dplyr %>%
+#' @importFrom rlang .data
+#' @importFrom R6 R6Class
+NULL
+
+#' A gobal variable to store defaults for the tetramerPCA.
+#'
+#' @format A list of global constants and defaults
+#' \describe{
+#'    \item{WINDOW}{the window of analysis in bases - this windows 'slides' along the contig}
+#'    \item{STEP}{the distance in bases to advance the window between successive tabulations}
+#'    \item{WIDTH}{here it is always 4 bases per polymer, but the idea is that eventually other widths maybe possible}
+#'    \item{NAME}{currently unused}
+#'    \item{NPC}{The number of principle components to retain, by default 8}
+#'    \item{CLEAN}{logical, if TRUE then attempt to clean the inut contigs of disallowed characters}
+#'    \item{VERBOSE}{logical, if TRUE then output informational messages}
+#'    \item{LOG}{the name of the output log file, if used}
+#'    \item{PICK}{the number of outliers to select per PC, by default 2}
+#'    \item{PAIRS}{a two column matrix specifing the PCs to juxtapose}
+#'    \item{BLASTPATH}{the path to the location of the local install of blastn}
+#'    \item{DNALETTERS}{a list of allowed DNA letters}
+#'    \item{TETRAMERS}{a list of reverse-complimented tabulated tetramers, length = 136}
+#'    \item{UTETRAMERS}{a list of possible tetramers, some of which may be reverse compliments, length = 256}
+#'    \item{FAILSTATUS}{a list of reasons why a contig may fail the tetramerPCA process }
+#'    \item{BLASTOPTS}{a list of default blastn options}
+#' }
+"TETRA"

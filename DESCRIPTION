@@ -1,0 +1,21 @@
+Package: tetramers
+Type: Package
+Author: Ben Tupper
+Maintainer: Ben Tupper <btupper@bigelow.org>
+Version: 0.1
+Title: Tetramer Analysis with Principle Component Analysis
+Description: A suite of simple tools to manage the workflow for tetramer analysis with PCA.
+LazyData: yes
+License: MIT + file LICENSE
+URL: https://github.com/BigelowLab/tetramers
+Imports:
+    rlang,
+    R6,
+    dplyr,
+    readr,
+    yaml,
+    Biostrings,
+    RColorBrewer,
+    blastxml
+RoxygenNote: 6.0.1
+Encoding: UTF-8
