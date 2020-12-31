@@ -1,6 +1,6 @@
-## tetramerpca
+## tetramers
 
-TeteramPCA detects outlier regions in genomes in terms of tetramer composition, which are indicative of either contamination or gene transfer.  Use is via a script included with the package.
+`tetramers` is an R package detects outlier regions in genomes in terms of tetramer composition, which are indicative of either contamination or gene transfer.  Use is either interactove or via a script included with the package.
 
 
 ### Requirements:
@@ -54,11 +54,13 @@ Install github packages using [remotes](https://cran.r-project.org/package=remot
 
 ```r
 remotes::install_github("BigelowLab/blastxml", lib = lib_path)
-remotes::install_github("BigelowLab/tetramerpca", lib = lib_path)
+remotes::install_github("BigelowLab/tetramers", lib = lib_path)
 ``` 
 
 
 ### Interactive usage
+
+The package exposes the essentialy steps for teteramer analysis, outlier selection and plotting.
 
 ```r
 path = "/mnt/scgc_nfs/lab/ben/tetramer_test/AH-906-G21_contigs/tetramers"
@@ -69,6 +71,9 @@ X$tabulate_tetramers(verbose = TRUE)
 X$run_or_load_blast(verbose = TRUE)
 X$plot()
 ```
+
+
+# TO DO - update script
 
 ### Script location
 
