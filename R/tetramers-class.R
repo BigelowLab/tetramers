@@ -69,8 +69,19 @@ Tetramers <- R6::R6Class("Tetramers",
       self$filename       <- x[1]    
       self$name           <- name[1]
       self$out_dir        <- output_dir
+      
+      # set the defaults, and then update as required
       self$parameters     <- parameters
+      self$parameters     <- c(WINDOW = 1600, STEP = 200, WIDTH = 4, HSP_BIT_SCORE_MIN = 75)
+      for (p in names(parameters)) {
+        P <- toupper(p)
+        self$parameters[[P]] <- parameters[[p]]
+      }
+      
+      # make sure all upper case
       self$pick           <- pick
+      names(self$pick)    <- toupper(names(self$pick))
+      
       self$blast_options  <- blast_options
       self$read_file()
     }, # initialize
@@ -122,10 +133,10 @@ Tetramers <- R6::R6Class("Tetramers",
     get_tabulation = function(form = c("matrix", "table")[2]){
       
       if (tolower(form[1]) == 'table'){
-        x <- dplyr::tibble(wname = rownames(X$data)) %>%
-          dplyr::bind_cols(dplyr::as_tibble(X$data))
+        x <- dplyr::tibble(wname = rownames(self$data)) %>%
+          dplyr::bind_cols(dplyr::as_tibble(self$data))
       } else {
-        x <- X$data
+        x <- self$data
       }
       x
     },
@@ -139,12 +150,12 @@ Tetramers <- R6::R6Class("Tetramers",
       npc = 8){
       
       if (tolower(form[1]) == 'table'){
-        wname <- rownames(X$PC$x)
+        wname <- rownames(self$PC$x)
         cname <- unname(decomposeContigNames(wname)[,1])
         x <- dplyr::tibble(cname, wname) %>%
-          dplyr::bind_cols(dplyr::as_tibble(X$PC$x[,seq_len(npc)]))
+          dplyr::bind_cols(dplyr::as_tibble(self$PC$x[,seq_len(npc)]))
       } else {
-        x <- X$PC$x[,seq_len(npc)]
+        x <- self$PC$x[,seq_len(npc)]
       }
       x
     },
@@ -158,10 +169,10 @@ Tetramers <- R6::R6Class("Tetramers",
       npc = 8){
       
       if (tolower(form[1]) == 'table'){
-        x <- dplyr::tibble(wname = rownames(X$PC$rotation)) %>%
-          dplyr::bind_cols(dplyr::as_tibble(X$PC$rotation[,seq_len(npc)]))
+        x <- dplyr::tibble(wname = rownames(self$PC$rotation)) %>%
+          dplyr::bind_cols(dplyr::as_tibble(self$PC$rotation[,seq_len(npc)]))
       } else {
-        x <- X$PC$rotation[,seq_len(npc)]
+        x <- self$PC$rotation[,seq_len(npc)]
       }
       x
     },
@@ -208,7 +219,7 @@ Tetramers <- R6::R6Class("Tetramers",
         if (verbose[1]) cat("loading existing blast data\n")
         self$load_blast(filename = blastfile)
       } else {
-        self$run_blast(verbose = TRUE)
+        self$run_blast(verbose = verbose)
       }
     }, 
     

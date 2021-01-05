@@ -63,6 +63,7 @@ remotes::install_github("BigelowLab/tetramers", lib = lib_path)
 The package exposes the essentialy steps for teteramer analysis, outlier selection and plotting.
 
 ```r
+library(tetramers)
 path = "/mnt/scgc_nfs/lab/ben/tetramer_test/AH-906-G21_contigs/tetramers"
 filename = "AH-906_G21_contigs.fasta"
 fasta_file <- file.path(path, filename)
@@ -85,13 +86,13 @@ The script is located in the `scripts` subdirectory for tetramerpca library dire
  
  + `/mnt/scgc_nfs/opt/common/R/3.2.2/lib64/R/library/tetramerpca/scripts/tetramer_pipeline.Rscript`
  
-Note that the script can also be copied from [github](https://github.com/BigelowLab/tetramerpca/blob/master/inst/scripts/tetramer_pipeline.Rscript) and placed anywhere convenient.
+Note that the script can also be copied from [github](https://github.com/BigelowLab/tetramers/blob/master/inst/scripts/tetramer_pipeline.Rscript) and placed anywhere convenient.
 
 ### Script usage
 
 ```
 Usage:
-tetramerpca_pipeline.Rscript [--input character] [--output_dir character]
+tetramer_pipeline.Rscript [--input character] [--output_dir character]
      [--window numeric] [--step numeric] [--blast_cmd character] [--db
      character] [--num_threads character] [--num_alignments character]
      [--evalue character]
@@ -147,14 +148,22 @@ Rscript --vanilla /mnt/scgc_nfs/opt/common/R/3.2.2/lib64/R/library/tetramerpca/s
 
  + Output a variety of files where `name` is from the input file.
  
-   - Normalized tetramer frequency table, `name-counts.csv`
+   - Original FASTA sequence, `name.fasta`
    
-   - Principal components and loadings, `name-loading.csv`
-   
-   - PCA plots, `name-outliers.pdf` 
-   
-   - Outlier window contigs, `name-outliers.fasta`
-   
-   - blastn output, `name-outliers.xml`
-   
-   - a listing of failed contigs, `name-failed.csv`
+  - Principal component values, `name-tetramer-PC.csv.gz`
+  
+  - Principla component loadings, `name-tetramer-loading.csv.gz`
+  
+  - Listing of contigs where tetramer analysis failed,  `name-tetramer-fail.csv`
+  
+  - Listing of  `name-tetramer-counts.csv.gz`
+  
+  - Blast output, `name-outliers.xml`
+  
+  - Sequence data for outliers (fed to blast), `name-outliers.fasta`
+  
+  - Table of info about outliers, `name-outliers.csv`
+  
+  - Metadata, `name-info.yaml`
+  
+   - PCA plots, `name-WINDOW-STEP-PC.pdf` (where WINDOW and STEP are integers) 

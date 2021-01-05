@@ -1,0 +1,154 @@
+# Tetramers analysis and output for use in pipelines
+#
+# R packages:
+#
+#   devtools::install_github("BigelowLab/rscripting")
+#   devtools::install_github("BigelowLab/blastxml")
+#   devtools::install_github("BigelowLab/tetramers")
+#
+# Usage:
+#
+# ```
+# tetramerpca_pipeline.Rscript [--input character] [--output_dir character]
+#      [--window numeric] [--step numeric] [--blast_cmd character] [--db
+#      character] [--num_threads character] [--num_alignments character]
+#      [--evalue character] [--select_method character]
+#
+# Argument details follow
+# --input (required, type 'character')
+#     required input fasta file
+#     default:
+# --output_dir (type 'character')
+#     optional output directory, by default directory same as input
+#     default:
+# --window (type 'numeric')
+#     window width in characters, default is 1600
+#     default: 1600
+# --step (type 'numeric')
+#     window step size in characters, default is 200
+#     default: 200
+# --blast_cmd (type 'character')
+#     name of the bast application possibly with path
+#     default: blastn
+# --db (type 'character')
+#     blast database name possibly with path
+#     default: nt
+# --num_threads (type 'character')
+#     blast option passed through
+#     default: 12
+# --num_alignments (type 'character')
+#     bast option passed through
+#     default: 10
+# --evalue (type 'character')
+#     bast option passed through
+#     default: 10
+# --select_method (type 'character')
+#     select either classic or matrix outlier selection method
+#     default: classic
+# ```
+
+suppressWarnings(suppressMessages(library(rscripting)))
+suppressWarnings(suppressMessages(library(blastxml)))
+suppressWarnings(suppressMessages(library(tetramerpca)))
+
+DEVEL <- interactive()
+if (DEVEL){
+    cat("DEVELOPMENT MODE\n")
+    arg_list <- c(
+        "/usr/lib64/R/bin/exec/R", "--no-save",
+        "--no-restore", "--no-site-file","--no-environ", "--args",
+        "--input",
+        "/mnt/scgc_raw/clarity/devel/tetramer_pipeline/AAA007-O23_CLC_contigs.fasta",
+      "--output_dir", "/home/btupper/tetra")
+} else {
+    arg_list <- commandArgs(trailingOnly = FALSE)
+}
+
+#' Retrieve a list of blast and tetramerpca parameters
+#'
+#' @param ARGS CommandArgsRefCLass
+#' @return list of
+#' \itemize{
+#'  \item{cmd character command string}
+#'  \item{tetramer_params names numeric vector of windw and step}
+#' }
+pt_get_params <- function(ARGS){
+
+    list(
+        cmd = paste(
+            ARGS$get("blast_cmd"),
+            "-db",              ARGS$get("db"),
+            "-num_threads",     ARGS$get("num_threads"),
+            "-num_alignments",  ARGS$get("num_alignments"),
+            "-evalue",          ARGS$get("evalue")),
+            tetramer_params = c(window = ARGS$get("window"), step = ARGS$get("step"))
+    )
+}
+
+#' Given a character vector parse the arguments
+#'
+#' @param character vector of arguments
+#' @return CommandArsgRefClass object
+pt_parse_args <- function(args_list){
+    ARGS <- rscripting::CommandArgs(arg_list, name = 'tetramer_pipeline.Rscript')
+    ARGS$add_argument("input", required = TRUE, type = 'character',
+        help = "required input fasta file")
+    ARGS$add_argument("output_dir", default = "", type = 'character',
+        help = "optional output directory, by default directory same as input")
+    ARGS$add_argument("window", default = 1600, type = 'numeric',
+        help = "window width in characters, default is 1600")
+    ARGS$add_argument('step', default = 200, type = 'numeric',
+        help = "window step size in characters, default is 200")
+        # blastn haiku
+        # database quandry
+        # nucleotide has a t
+        # blastn with nt
+    ARGS$add_argument("blast_cmd", default = 'blastn',
+        help = 'name of the bast application possibly with path')
+    ARGS$add_argument("db", default = 'nt',
+        help = 'blast database name possibly with path')
+    ARGS$add_argument("num_threads", default = '12',
+        help = 'blast option passed through')
+    ARGS$add_argument("num_alignments", default = '10',
+        help = 'bast option passed through')
+    ARGS$add_argument("evalue", default = '10',
+        help = 'bast option passed through')
+    #ARGS$add_argument('blast_cmd',
+    #    default = 'blastn -db nt -num_threads 7 -num_alignments 10 -evalue 10',
+    #    help = "blast app command with options - quoted to group elements\ndefault is 'blastn -db nr -num_threads 7 -num_alignments 10 -evalue 10'")
+    ARGS$parse_arguments()
+    ARGS
+}
+
+ARGS <- pt_parse_args(args_list)
+input <- ARGS$get("input")
+output_dir <- ARGS$get("output_dir")
+if (nchar(output_dir) == 0) output_dir <- dirname(input)
+
+PP <- pt_get_params(ARGS)
+
+X <- try(tetramers::Tetramers(input,
+    output_dir = output_dir,
+    parameters = PP[['tetramer_params']],
+    blast_options = PP[['cmd']]))
+
+if (inherits(X, 'try-error')){
+    cat("tetramer_pipeline: error instantiating Tetramers class\n")
+    quit(save = 'no', status = 1)
+}
+
+X$tabulate_tetramers()
+
+X <- try(tetramerpca::run_blast(X))
+if (inherits(X, 'try-error')){
+    cat("tetramer_pipeline: error running blast\n")
+    quit(save = 'no', status = 1)
+}
+
+ok <- try(X$plot())
+if (inherits(ok, 'try-error') || !ok){
+    cat("tetramer_pipeline: error creating graphics\n")
+    quit(save = 'no', status = 1)
+}
+
+quit(save = 'no', status = 0)
