@@ -102,19 +102,19 @@ write_tetra <- function(X,
   
   if ("count" %in% what){
     if (verbose) cat("saving tabulation\n")
-    filename <- file.path(path, paste(X$name,"tetramer-counts.csv.gz",sep="-"))
+    filename <- file.path(path, paste(X$name,"tetramer-counts.csv",sep="-"))
     readr::write_csv(X$get_tabulation(form = 'table'), filename)
   }
   
   if ("pca" %in% what){
     if (verbose) cat("saving principal components\n")
-    filename <- file.path(path, paste(X$name,"tetramer-PC.csv.gz",sep="-"))
+    filename <- file.path(path, paste(X$name,"tetramer-PC.csv",sep="-"))
     readr::write_csv(X$get_principal_components(form = 'table'), filename)
   }
   
   if ("fail" %in% what){
     if (verbose) cat("saving fails (gzipped if any)\n")
-    filename <- file.path(path, paste(X$name,"tetramer-fail.csv.gz",sep="-"))
+    filename <- file.path(path, paste(X$name,"tetramer-fail.csv",sep="-"))
     if (length(X$fail) > 0){
        z <- do.call(rbind,lapply(X$fail, "[[", "x"))
        status <- sapply(X$fail, "[[", "status")
@@ -134,7 +134,7 @@ write_tetra <- function(X,
   
   if ("loading" %in% what){
     if (verbose) cat("saving loadings\n")
-    filename <- file.path(path, paste(X$name,"tetramer-loading.csv.gz",sep="-"))
+    filename <- file.path(path, paste(X$name,"tetramer-loading.csv",sep="-"))
     readr::write_csv(X$get_loadings(form = 'table'), filename)
   }
   
