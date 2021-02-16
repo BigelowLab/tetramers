@@ -49,16 +49,37 @@
 
 suppressWarnings(suppressMessages(library(rscripting)))
 suppressWarnings(suppressMessages(library(blastxml)))
-suppressWarnings(suppressMessages(library(tetramerpca)))
+suppressWarnings(suppressMessages(library(tetramers)))
+
 
 DEVEL <- interactive()
+
+#' Count the number of CPUs
+#'
+#' If the number of CPUS has been specified for a PBS session then retrieves the values
+#' of environment variable '$NCPUS' otherwise this is wrap of \code{\link[parallel]{detectCores}}
+#'
+#' @export
+#' @return integer count of cores
+count_cores <- function(){
+  ncpus <- Sys.getenv("NCPUS")
+  if (nchar(ncpus) == 0){
+   ncpus <- parallel::detectCores()
+  } else {
+    ncpus <- as.integer(ncpus[1])
+  }
+  ncpus
+}
+
+
 if (DEVEL){
     cat("DEVELOPMENT MODE\n")
     arg_list <- c(
         "/usr/lib64/R/bin/exec/R", "--no-save",
         "--no-restore", "--no-site-file","--no-environ", "--args",
         "--input",
-        "/mnt/scgc_raw/clarity/devel/tetramer_pipeline/AAA007-O23_CLC_contigs.fasta",
+        "/mnt/scgc/scgc_raw/results/nextseq/2021_01_22_BrownJ_SCGC_AI-547_Test/AH-806-A13/AH-806-A13_contigs.fasta",
+        #"/mnt/scgc_raw/clarity/devel/tetramer_pipeline/AAA007-O23_CLC_contigs.fasta",
       "--output_dir", "/home/btupper/tetra")
 } else {
     arg_list <- commandArgs(trailingOnly = FALSE)
@@ -75,13 +96,13 @@ if (DEVEL){
 pt_get_params <- function(ARGS){
 
     list(
-        cmd = paste(
-            ARGS$get("blast_cmd"),
-            "-db",              ARGS$get("db"),
-            "-num_threads",     ARGS$get("num_threads"),
-            "-num_alignments",  ARGS$get("num_alignments"),
-            "-evalue",          ARGS$get("evalue")),
-            tetramer_params = c(window = ARGS$get("window"), step = ARGS$get("step"))
+       cmd = paste(
+           ARGS$get("blast_cmd"),
+           "-db",              ARGS$get("db"),
+           "-num_threads",     ARGS$get("num_threads"),
+           "-num_alignments",  ARGS$get("num_alignments"),
+           "-evalue",          ARGS$get("evalue")),
+      tetramer_params = c(window = ARGS$get("window"), step = ARGS$get("step"))
     )
 }
 
@@ -103,11 +124,12 @@ pt_parse_args <- function(args_list){
         # database quandry
         # nucleotide has a t
         # blastn with nt
-    ARGS$add_argument("blast_cmd", default = 'blastn',
-        help = 'name of the bast application possibly with path')
+    ARGS$add_argument("blast_cmd", 
+        default = "blastn",
+        help = 'name of the blast application possibly with path')
     ARGS$add_argument("db", default = 'nt',
         help = 'blast database name possibly with path')
-    ARGS$add_argument("num_threads", default = '12',
+    ARGS$add_argument("num_threads", default = as.character(count_cores()),
         help = 'blast option passed through')
     ARGS$add_argument("num_alignments", default = '10',
         help = 'bast option passed through')
@@ -127,28 +149,41 @@ if (nchar(output_dir) == 0) output_dir <- dirname(input)
 
 PP <- pt_get_params(ARGS)
 
-X <- try(tetramers::Tetramers(input,
+X <- try(tetramers::Tetramers$new(input,
     output_dir = output_dir,
     parameters = PP[['tetramer_params']],
     blast_options = PP[['cmd']]))
 
 if (inherits(X, 'try-error')){
     cat("tetramer_pipeline: error instantiating Tetramers class\n")
-    quit(save = 'no', status = 1)
+    if (DEVEL){
+      stop("tetramer_pipeline: error instantiating Tetramers class")
+    } else {
+      quit(save = 'no', status = 1)
+    }
 }
 
 X$tabulate_tetramers()
 
-X <- try(tetramerpca::run_blast(X))
+X <- try(tetramers::run_blast_app(X))
 if (inherits(X, 'try-error')){
     cat("tetramer_pipeline: error running blast\n")
-    quit(save = 'no', status = 1)
+    if (DEVEL){
+      stop("tetramer_pipeline: error running blast")
+    } else {
+      quit(save = 'no', status = 1)
+    }
 }
 
 ok <- try(X$plot())
 if (inherits(ok, 'try-error') || !ok){
     cat("tetramer_pipeline: error creating graphics\n")
-    quit(save = 'no', status = 1)
+    if (DEVEL){
+      stop("tetramer_pipeline: error creating graphics")
+    } else {
+      quit(save = 'no', status = 1)
+    }
 }
 
-quit(save = 'no', status = 0)
+
+if (!DEVEL) quit(save = 'no', status = 0)

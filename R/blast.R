@@ -9,7 +9,7 @@ run_blast_app <- function(X, verbose = FALSE){
   verbose <- verbose[1]
   if (!inherits(X, "Tetramers")) stop("input must be Tetramers R6 class object")
   
-  blastOpts <- strsplit(X$blast_options, " ")[[1]]
+  blastOpts <- strsplit(X$blast_options, " ", fixed = TRUE)[[1]]
   blastApp <- Sys.which(blastOpts[1])
   if (nchar(blastApp) == 0){
       cat("blast is not accessible\n")
