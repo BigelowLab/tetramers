@@ -80,7 +80,10 @@ if (DEVEL){
         "--input",
         "/mnt/scgc/scgc_raw/results/nextseq/2021_01_22_BrownJ_SCGC_AI-547_Test/AH-806-A13/AH-806-A13_contigs.fasta",
         #"/mnt/scgc_raw/clarity/devel/tetramer_pipeline/AAA007-O23_CLC_contigs.fasta",
-      "--output_dir", "/home/btupper/tetra")
+      "--output_dir", "/mnt/scgc/scgc_nfs/lab/julia/test_new_tetpca",
+      "--num_threads", count_cores(),  
+      "--window", "1600",
+      "--step", "200")
 } else {
     arg_list <- commandArgs(trailingOnly = FALSE)
 }
@@ -114,7 +117,7 @@ pt_parse_args <- function(args_list){
     ARGS <- rscripting::CommandArgs(arg_list, name = 'tetramer_pipeline.Rscript')
     ARGS$add_argument("input", required = TRUE, type = 'character',
         help = "required input fasta file")
-    ARGS$add_argument("output_dir", default = "", type = 'character',
+    ARGS$add_argument("output", default = "", type = 'character',
         help = "optional output directory, by default directory same as input")
     ARGS$add_argument("window", default = 1600, type = 'numeric',
         help = "window width in characters, default is 1600")
@@ -144,7 +147,7 @@ pt_parse_args <- function(args_list){
 
 ARGS <- pt_parse_args(args_list)
 input <- ARGS$get("input")
-output_dir <- ARGS$get("output_dir")
+output_dir <- ARGS$get("output")
 if (nchar(output_dir) == 0) output_dir <- dirname(input)
 
 PP <- pt_get_params(ARGS)
