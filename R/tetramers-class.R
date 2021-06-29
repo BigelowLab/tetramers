@@ -62,7 +62,8 @@ Tetramers <- R6::R6Class("Tetramers",
       output_dir = file.path(dirname(x[1]), name), 
       parameters = c(WINDOW = 1600, STEP = 200, WIDTH = 4, HSP_BIT_SCORE_MIN = 75),
       pick = c(PC1 = 2, PC2 = 2, PC3 = 2, PC4 = 2, PC5 = 2, PC6 = 2, PC7 = 2, PC8 = 2),   
-      blast_options = "blastn -db nt -num_threads 4 -num_alignments 10 -evalue 10"){
+      blast_options = "blastn -db /mnt/databases/NCBI/blast/2019-04-17/nt -num_threads 4 -num_alignments 10 -evalue 10"){
+      #blast_options = "blastn -db nt -num_threads 4 -num_alignments 10 -evalue 10"){
         
      
       if (!file.exists(x[1])) stop("input filename must be provided")
