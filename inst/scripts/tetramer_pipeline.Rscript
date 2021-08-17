@@ -32,7 +32,7 @@
 #     default: blastn
 # --db (type 'character')
 #     blast database name possibly with path
-#     default: nt
+#     default: /mnt/databases/NCBI/blast/2019-04-17/nt
 # --num_threads (type 'character')
 #     blast option passed through
 #     default: 12
@@ -130,7 +130,7 @@ pt_parse_args <- function(args_list){
     ARGS$add_argument("blast_cmd", 
         default = "blastn",
         help = 'name of the blast application possibly with path')
-    ARGS$add_argument("db", default = 'nt',
+    ARGS$add_argument("db", default = '/mnt/databases/NCBI/blast/2019-04-17/nt',
         help = 'blast database name possibly with path')
     ARGS$add_argument("num_threads", default = as.character(count_cores()),
         help = 'blast option passed through')
