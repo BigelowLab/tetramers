@@ -24,6 +24,9 @@
   + [RColorBrewer](https://cran.r-project.org/package=RColorBrewer)
 
 
+### Database Requirement
+
+The database must be from 2020 or prior.  
  
 ### Installation
 
