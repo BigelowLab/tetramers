@@ -1,3 +1,12 @@
+#' Test for oddness
+#' 
+#' @export
+#' @param x numeric vector
+#' @return logical vector
+is_odd <- function(x) {
+  is.logical(x %% 2)
+}
+
 #' Extract a name from a filename
 #'
 #' @export

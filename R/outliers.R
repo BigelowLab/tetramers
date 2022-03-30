@@ -8,7 +8,7 @@
 #'
 #' @export
 #' @param X a Tetramers R6 class reference
-#' @return the input x
+#' @return the input X
 select_outliers <- function(X){
 
   # given a table, return the row indoices for first and last rows
@@ -88,6 +88,18 @@ select_outliers <- function(X){
   M <- X$PC$x[,1:nPC, drop = FALSE]
   wname <- rownames(M)
   cname <- as.vector(decomposeContigNames(wname)[,1])
+  ucname <- unique(cname)
+  nucname <- length(ucname)
+  if (nucname < nPC){
+    if (is_odd(nucname)){
+      nPC <- nucname - 1
+    } else {
+      nPC <- nucname
+    }
+    if (nPC <= 1) stop("unable to proceed with just one contig")
+  }
+  
+  
   x <- dplyr::tibble(cname = cname, wname = wname) %>%
     dplyr::bind_cols(dplyr::as_tibble(M))
   index <- seq(from = 1, to = nPC, by = 2)

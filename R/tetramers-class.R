@@ -104,7 +104,7 @@ Tetramers <- R6::R6Class("Tetramers",
           tStep = self$parameters[['STEP']],
           tWidth = self$parameters[['WIDTH']])
       # differentiate between failed and successful tabulations
-      if (verbose[1]) cat("idebtifying failed tabulations\n")
+      if (verbose[1]) cat("identifying failed tabulations\n")
       ok <- sapply(Z, "[[", "status") == 0
       X <- lapply(Z[ok], "[[", "x")
       self$fail <- Z[!ok]

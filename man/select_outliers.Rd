@@ -10,7 +10,7 @@ select_outliers(X)
 \item{X}{a Tetramers R6 class reference}
 }
 \value{
-the input x
+the input X
 }
 \description{
 It's a select-and-remove process.  First order by PCx. Select the outliers and
